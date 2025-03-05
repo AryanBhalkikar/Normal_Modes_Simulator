@@ -1,29 +1,22 @@
-/*
-
-Problems: 
-    1. Repeating values in data.txt
-    2. last mode not giving 0 amplitude
-
-*/
-
-
-
-
 #include <iostream>
 #include <fstream>
 
 #define PI 3.14159
 
-void amplitudeFunction(double w, std::vector<std::pair<int,double> > A){
+void amplitudeFunction(double w, std::vector<std::pair<int,double> > A0){
 
-    double timeConstant = PI / (2 * w);
     std::ofstream op ("data.txt");
+
+    double timePeriod = 2*PI/w;
+    std::vector<std::pair<int, double> > A;
     
-    for (int t = 0; t < 10; t++){
+    for (double t = 0; t < timePeriod; t = t+0.5){
 
-        double coswtValue = std::cos(w*t*timeConstant);
+        A = A0;
 
-        for (auto i: A){
+        double coswtValue = std::cos(w*t);
+
+        for (auto &i: A){
             i.second = (i.second) * coswtValue;
         }
         
@@ -43,10 +36,11 @@ void findMaxAmp(int n, int N, double w){
     std::vector<std::pair<int, double> > A0;
 
     double ampSinConstant = PI * n / (N+1);
-    for (p = 0; p <= N+1; p++){
+    for (p = 0; p <= N; p++){
         double maxAmpOfP = C * std::sin(ampSinConstant*p);
         A0.push_back(std::make_pair(p, maxAmpOfP));
     }
+    A0.push_back(std::make_pair(N+1, 0));
     amplitudeFunction(w, A0);
 }
 
@@ -55,8 +49,8 @@ double naturalAngFreq(double T, double m, double l){
 }
 
 double angFreq(double naturalAngFreq, int N, int n){
-    int freqSinConstant = PI * n / (2*(N+1));
-    return 2*naturalAngFreq*std::sin(freqSinConstant);
+    double freqSinConstant = PI * n / (2*(N+1));
+    return (2*naturalAngFreq*std::sin(freqSinConstant));
 }
 
 int main(){
